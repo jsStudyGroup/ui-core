@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css" />
+    <title>codemirror test</title>
+
+    <style>
+      .CodeMirror {
+        width: 100%;
+        border: 1px solid black;
+      }
+
+      #preview {
+        margin-top: 20px;
+        margin-bottom: 100px;
+        width: 100%;
+        min-height: 100px;
+        background-color: #f0f0f0;
+        border: none;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      style="margin: auto; background: transparent; display: block"
+      width="200px"
+      height="200px"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid"
+    >
+      <defs>
+        <path
+          id="path"
+          d="M50 15A15 35 0 0 1 50 85A15 35 0 0 1 50 15"
+          fill="none"
+        ></path>
+        <path
+          id="patha"
+          d="M0 0A15 35 0 0 1 0 70A15 35 0 0 1 0 0"
+          fill="none"
+        ></path>
+      </defs>
+      <g transform="rotate(0 50 50)">
+        <use xlink:href="#path" stroke="#e1e7e7" stroke-width="3"></use>
+      </g>
+      <g transform="rotate(60 50 50)">
+        <use xlink:href="#path" stroke="#e1e7e7" stroke-width="3"></use>
+      </g>
+      <g transform="rotate(120 50 50)">
+        <use xlink:href="#path" stroke="#e1e7e7" stroke-width="3"></use>
+      </g>
+      <g transform="rotate(0 50 50)">
+        <circle cx="50" cy="15" r="9" fill="#df1317">
+          <animateMotion dur="1s" repeatCount="indefinite" begin="0s">
+            <mpath xlink:href="#patha"></mpath>
+          </animateMotion>
+        </circle>
+      </g>
+      <g transform="rotate(60 50 50)">
+        <circle cx="50" cy="15" r="9" fill="#e4934b">
+          <animateMotion
+            dur="1s"
+            repeatCount="indefinite"
+            begin="-0.16666666666666666s"
+          >
+            <mpath xlink:href="#patha"></mpath>
+          </animateMotion>
+        </circle>
+      </g>
+      <g transform="rotate(120 50 50)">
+        <circle cx="50" cy="15" r="9" fill="#e2bb8b">
+          <animateMotion
+            dur="1s"
+            repeatCount="indefinite"
+            begin="-0.3333333333333333s"
+          >
+            <mpath xlink:href="#patha"></mpath>
+          </animateMotion>
+        </circle>
+      </g>
+    </svg>
+    <label class="control-label">HTML:</label>
+    <textarea class="code" id="editor-html">
+abc
+<div class="bg">I have background.</div>
+def
+</textarea
+    >
+
+    <label class="control-label">CSS</label>
+    <textarea class="code" id="editor-css">
+.bg {
+  background: lightblue;
+}
+</textarea
+    >
+
+    <iframe id="preview"></iframe>
+
+    <script src="http://codemirror.net/lib/codemirror.js"></script>
+    <script src="http://codemirror.net/addon/edit/matchbrackets.js"></script>
+    <script src="http://codemirror.net/mode/javascript/javascript.js"></script>
+
+    <script>
+      let timeoutDelay = 300;
+      let onChangeDelay;
+
+      // Initialize CodeMirror editor with a nice html5 canvas demo.
+      let editorCSS = CodeMirror.fromTextArea(
+        document.querySelector("#editor-css"),
+        {
+          lineNumbers: true,
+          styleActiveLine: true,
+          matchBrackets: true,
+          mode: "text/html",
+        }
+      );
+      // Initialize CodeMirror editor with a nice html5 canvas demo.
+      let editorHTML = CodeMirror.fromTextArea(
+        document.querySelector("#editor-html"),
+        {
+          lineNumbers: true,
+          styleActiveLine: true,
+          matchBrackets: true,
+          mode: "text/html",
+        }
+      );
+
+      let updatePreview = function () {
+        let preview = document.querySelector("#preview");
+        let previewDocument =
+          preview.contentDocument || preview.contentWindow.document;
+        previewDocument.open();
+        previewDocument.write(editorHTML.getValue());
+        previewDocument.close();
+        previewDocument.querySelector("head").innerHTML =
+          "<style>" + editorCSS.getValue() + "</style>";
+      };
+
+      let editorOnChange = function () {
+        clearTimeout(timeoutDelay);
+        onChangeDelay = setTimeout(updatePreview, timeoutDelay);
+      };
+
+      editorCSS.on("change", editorOnChange);
+      editorHTML.on("change", editorOnChange);
+
+      // Initialize iframe result
+      setTimeout(updatePreview, timeoutDelay);
+    </script>
+  </body>
+</html>
